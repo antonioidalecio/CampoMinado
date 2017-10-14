@@ -12,7 +12,7 @@ int nivelEscolhido;
 
 int main() {
 
-	char opcao;
+    char opcao;
     bool dica;
 
     do {
@@ -36,7 +36,6 @@ int main() {
 
                 nivelEscolhido = selecionaNivel();
                 preencheBombas( nivelEscolhido );
-                preencheDicas();
                 limpaTela();
 
                 do {
@@ -204,27 +203,6 @@ bool ganhou() {
     return acertos == ( LINHA*COLUNA -  nivelEscolhido );
 }
 
-void preencheDicas() {
-
-    int linha, coluna;
-    int lin, col;
-    int bomba;
-
-    for(linha = 0; linha < LINHA; linha++) {
-        for(coluna = 0; coluna < COLUNA; coluna++) {
-            bomba = 0;
-            if( bombas[linha][coluna] != BOMBA ) {
-                for(lin = linha - 1; lin <= linha + 1; lin++)
-                    for(col = coluna - 1; col <= coluna + 1; col++)
-                        if(lin >= 0 && lin < LINHA && col >= 0 && col < COLUNA && bombas[lin][col] == BOMBA)
-                            bomba++;
-    
-                bombas[linha][coluna] = '0' + bomba;
-            }
-        }
-    }
-}
-
 void expande(int lin, int col) {
 
     if( bombas[lin][col] != '0' ) {
@@ -319,7 +297,7 @@ void marcar() {
 
 void menu(int m) {
 
-    // Posição do menu
+    // PosiÃ§Ã£o do menu
     int col;
     int lin;
 
@@ -406,6 +384,16 @@ void imprimeCampo() {
     }
 }
 
+void preencheVizinhanca(int lin, int col) {
+
+    int i, j;
+
+    for(i = lin - 1; i <= lin + 1; i++)
+        for(j = col - 1; j <= col + 1; j++)
+            if(i >= 0 && i < LINHA && j >= 0 && j < COLUNA && bombas[i][j] != BOMBA)
+                bombas[i][j] += 1;
+}
+
 void preencheBombas(int numBombas) {
 
     int lin, col;
@@ -420,12 +408,15 @@ void preencheBombas(int numBombas) {
 
         if( bombas[lin][col] != BOMBA ) {
             bombas[lin][col] = BOMBA;
+
+            preencheVizinhanca(lin, col);
+
             cont++;
         }
     }
 }
 // Posiciona o cursor do terminal nas posicoes x, y fornecidas;
 void gotoxy(int x, int y) {
- 	printf("\033[%d;%df", y, x);
- 	fflush(stdout);
+	printf("\033[%d;%df", y, x);
+	fflush(stdout);
 }
